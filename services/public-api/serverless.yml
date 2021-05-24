@@ -1,20 +1,16 @@
-service: graphql-api
-# app and org for use with dashboard.serverless.com
-# omit if you're not usling serverless.com
-# app: serverless-template
-# org: plsharocko
+service: public-api
 plugins:
   - serverless-dotenv-plugin
   - serverless-s3-remover
-  - serverless-offline
   - serverless-webpack
+  - serverless-offline
 
 custom: ${file(../../serverless.common.yml):custom}
 
 package:
   individually: true
-  exclude:
-    - ./**
+  patterns:
+    - '!./**'
 
 provider:
   name: aws
@@ -23,14 +19,17 @@ provider:
   runtime: nodejs12.x
   profile: ${self:custom.profile}-${self:custom.stage_env.${self:provider.stage}.PROFILE, 'dev'}
   environment: ${self:custom.stage_env.${self:provider.stage}}
+  lambdaHashingVersion: 20201221
   tracing:
     apiGateway: true
     lambda: true
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - lambda:InvokeFunction
-      Resource: '*'
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+          Resource: '*'
 
 functions:
   graphql:

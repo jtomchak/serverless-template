@@ -1,12 +1,12 @@
 custom:
-  profile: serverless-template # use your project aws prefix here
+  profile: serverless-template
   region: ${opt:region, self:provider.region}
 
   dotenv:
     path: ../../.env.development
 
   ports:
-    graphql-api:
+    public-api:
       httpPort: 3000
       lambdaPort: 3002
 
@@ -30,10 +30,11 @@ custom:
       SLS_STAGE: local
 
   warmup:
-    enabled: false
-    events:
-      - schedule: 'rate(10 minutes)'
-    prewarm: true
+    default:
+      enabled: false
+      events:
+        - schedule: 'rate(10 minutes)'
+      prewarm: true
 
   webpack:
     excludeFiles: ./**/*.test.js
@@ -42,5 +43,7 @@ custom:
         - aws-sdk
       forceInclude: ~
       packagePath: ../../package.json
-    packager: yarn
+      nodeModulesRelativeDir: '../../'
+    # keepOutputDirectory: true # uncomment if debugging
+    packager: npm
     webpackConfig: ../../webpack.config.js
